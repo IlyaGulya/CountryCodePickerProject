@@ -1652,20 +1652,24 @@ public class CountryCodePicker extends RelativeLayout {
      * @return Full number is countryCode + carrierNumber i.e countryCode= 91 and carrier number= 8866667722, this will return "918866667722"
      */
     public String getFullNumber() {
-        String fullNumber = getSelectedCountryCode();
+        StringBuilder fullNumber = new StringBuilder(getSelectedCountryCode());
         if (editText_registeredCarrierNumber != null) {
             PhoneNumberUtil phoneNumberUtil = getPhoneUtil();
             try {
-                String phoneCode = getSelectedCountryCode();
                 String nameCode = getSelectedCountryNameCode();
-                String nationalPhone = PhoneNumberUtil.normalizeDigitsOnly(editText_registeredCarrierNumber.getText().toString());
+                String nationalPhone = PhoneNumberUtil.normalizeDigitsOnly(editText_registeredCarrierNumber.getText()
+                        .toString());
                 Phonenumber.PhoneNumber phoneNumber = phoneNumberUtil.parse(nationalPhone, nameCode);
-                fullNumber = "" + phoneNumber.getCountryCode() + phoneNumber.getNationalNumber();
+                fullNumber = new StringBuilder("" + phoneNumber.getCountryCode());
+                for (int i = 0; i < phoneNumber.getNumberOfLeadingZeros(); i++) {
+                    fullNumber.append('0');
+                }
+                fullNumber.append(phoneNumber.getNationalNumber());
             } catch (NumberParseException e) {
                 e.printStackTrace();
             }
         }
-        return fullNumber;
+        return fullNumber.toString();
     }
 
     /**
